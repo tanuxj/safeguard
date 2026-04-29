@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [sendMode, setSendMode] = useState<"text" | "file">("text");
   const [generatedShareLink, setGeneratedShareLink] = useState("");
   const [mySends, setMySends] = useState<SendListItem[]>([]);
+  const [sendSearch, setSendSearch] = useState("");
   const [selectedSend, setSelectedSend] = useState<SendContentPreview | null>(null);
   const [newSendForm, setNewSendForm] = useState<NewSendForm>({
     name: "",
@@ -223,6 +224,10 @@ export default function Dashboard() {
     }
   };
 
+  const filteredSends = mySends.filter((send) =>
+    send.name.toLowerCase().includes(sendSearch.trim().toLowerCase())
+  );
+
   return (
     <main className="dashboard-page">
       <div className="dashboard-layout">
@@ -249,6 +254,13 @@ export default function Dashboard() {
 
               <p className="send-subheading">All Sends</p>
 
+              <input
+                className="send-search-input"
+                placeholder="Search sends by name"
+                value={sendSearch}
+                onChange={(event) => setSendSearch(event.target.value)}
+              />
+
               <div className="send-tabs">
                 <button className={`send-tab ${sendMode === "text" ? "is-active" : ""}`} onClick={() => setSendMode("text")}>
                   Text
@@ -258,53 +270,55 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <table className="send-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Deletion date</th>
-                    <th>Options</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mySends.length > 0 ? (
-                    mySends.map((send) => (
-                      <tr key={send.id}>
-                        <td>{send.name}</td>
-                        <td>{new Date(send.deletion_date).toLocaleString()}</td>
-                        <td>
-                          <div className="send-actions">
-                            <button
-                              className="send-tab is-active"
-                              onClick={() => void handleOpenSend(send.share_token)}
-                            >
-                              Open
-                            </button>
-                            <button
-                              className="send-tab"
-                              onClick={() => void handleDeleteSend(send.id)}
-                            >
-                              Delete
-                            </button>
-                            <button
-                              className="send-tab"
-                              onClick={() => void handleCopyLink(send.share_link)}
-                            >
-                              Copy link
-                            </button>
-                          </div>
+              <div className="send-table-container">
+                <table className="send-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Deletion date</th>
+                      <th>Options</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSends.length > 0 ? (
+                      filteredSends.map((send) => (
+                        <tr key={send.id}>
+                          <td>{send.name}</td>
+                          <td>{new Date(send.deletion_date).toLocaleString()}</td>
+                          <td>
+                            <div className="send-actions">
+                              <button
+                                className="send-tab is-active"
+                                onClick={() => void handleOpenSend(send.share_token)}
+                              >
+                                Open
+                              </button>
+                              <button
+                                className="send-tab"
+                                onClick={() => void handleDeleteSend(send.id)}
+                              >
+                                Delete
+                              </button>
+                              <button
+                                className="send-tab"
+                                onClick={() => void handleCopyLink(send.share_link)}
+                              >
+                                Copy link
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="send-empty">
+                          {mySends.length > 0 ? "No sends match your search" : "Send sensitive information safely"}
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={3} className="send-empty">
-                        Send sensitive information safely
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
               <p className="send-description">
                 Share files and data securely with anyone, on any platform.
