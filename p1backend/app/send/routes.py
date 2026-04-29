@@ -2,7 +2,7 @@ import os
 
 from fastapi import APIRouter, Header, Request
 from fastapi import File, Form, UploadFile
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response
 
 from app.send.models import Send
 from app.send.schemas import CreateSendRequest
@@ -10,6 +10,7 @@ from app.send.services import (
     build_share_link,
     create_text_send,
     create_file_send,
+    get_send_file_bytes,
     get_access_payload_from_header,
     is_send_expired,
     MAX_FILE_SIZE_BYTES,
@@ -230,8 +231,13 @@ async def download_public_file(
         send.view_count += 1
         await send.save(update_fields=["view_count"])
 
-    return FileResponse(
-        path=send.file_path,
-        filename=send.file_name,
+    file_bytes = get_send_file_bytes(send.file_path)
+    if file_bytes is None:
+        return {"message": "file not found"}
+
+    headers = {"Content-Disposition": f'attachment; filename="{send.file_name}"'}
+    return Response(
+        content=file_bytes,
         media_type=send.file_mime_type or "application/octet-stream",
+        headers=headers,
     )
