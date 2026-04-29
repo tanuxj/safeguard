@@ -374,6 +374,29 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.02);
 }
 
+.new-send-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.new-send-card-modal {
+  margin-top: 0;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border-radius: 16px;
+  background: linear-gradient(
+    170deg,
+    rgba(17, 24, 39, 0.98),
+    rgba(17, 24, 39, 0.9)
+  );
+}
+
 .send-help-text {
   margin: 2px 0 8px;
   color: var(--text-secondary);

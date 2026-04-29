@@ -361,7 +361,11 @@ export default function Dashboard() {
               ) : null}
 
               {showNewSendForm ? (
-                <div className="new-send-card">
+                <div className="new-send-modal" onClick={() => setShowNewSendForm(false)}>
+                  <div
+                    className="new-send-card new-send-card-modal"
+                    onClick={(event) => event.stopPropagation()}
+                  >
                   <h2 className="vaults-heading">New {sendMode === "text" ? "Text" : "File"} Send</h2>
                   <div className="send-tabs">
                     <button className={`send-tab ${sendMode === "text" ? "is-active" : ""}`} onClick={() => setSendMode("text")}>
@@ -499,6 +503,7 @@ export default function Dashboard() {
                     <button className="btn btn-secondary" onClick={() => setShowNewSendForm(false)}>
                       Cancel
                     </button>
+                  </div>
                   </div>
                 </div>
               ) : null}
