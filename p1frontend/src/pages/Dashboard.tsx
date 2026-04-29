@@ -38,7 +38,6 @@ interface SendContentPreview {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState<"send" | "vaults">("send");
   const [showNewSendForm, setShowNewSendForm] = useState(false);
   const [sendMode, setSendMode] = useState<"text" | "file">("text");
   const [generatedShareLink, setGeneratedShareLink] = useState("");
@@ -70,10 +69,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (activeNav === "send") {
-      void loadMySends();
-    }
-  }, [activeNav]);
+    void loadMySends();
+  }, []);
 
   const handleSendInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewSendForm((prev) => ({
@@ -232,18 +229,7 @@ export default function Dashboard() {
         <aside className="dashboard-sidebar">
           <h2 className="dashboard-brand">Safeguard</h2>
           <nav className="dashboard-nav">
-            <button
-              className={`dashboard-nav-item ${activeNav === "send" ? "is-active" : ""}`}
-              onClick={() => setActiveNav("send")}
-            >
-              Send
-            </button>
-            <button
-              className={`dashboard-nav-item ${activeNav === "vaults" ? "is-active" : ""}`}
-              onClick={() => setActiveNav("vaults")}
-            >
-              Vaults
-            </button>
+            <button className="dashboard-nav-item is-active">Send</button>
           </nav>
           <button onClick={handleLogout} className="btn btn-secondary">
             Logout
@@ -251,7 +237,6 @@ export default function Dashboard() {
         </aside>
 
         <section className="dashboard-content hero-card">
-          {activeNav === "send" ? (
             <>
               <div className="send-header">
                 <h1 className="send-title">Send</h1>
@@ -288,24 +273,26 @@ export default function Dashboard() {
                         <td>{send.name}</td>
                         <td>{new Date(send.deletion_date).toLocaleString()}</td>
                         <td>
-                          <button
-                            className="send-tab is-active"
-                            onClick={() => void handleOpenSend(send.share_token)}
-                          >
-                            Open
-                          </button>
-                          <button
-                            className="send-tab"
-                            onClick={() => void handleDeleteSend(send.id)}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            className="send-tab"
-                            onClick={() => void handleCopyLink(send.share_link)}
-                          >
-                            Copy link
-                          </button>
+                          <div className="send-actions">
+                            <button
+                              className="send-tab is-active"
+                              onClick={() => void handleOpenSend(send.share_token)}
+                            >
+                              Open
+                            </button>
+                            <button
+                              className="send-tab"
+                              onClick={() => void handleDeleteSend(send.id)}
+                            >
+                              Delete
+                            </button>
+                            <button
+                              className="send-tab"
+                              onClick={() => void handleCopyLink(send.share_link)}
+                            >
+                              Copy link
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -508,38 +495,6 @@ export default function Dashboard() {
                 </div>
               ) : null}
             </>
-          ) : (
-            <>
-              <h1 className="send-title">Vaults</h1>
-              <div className="vaults-filters-card">
-                <h2 className="vaults-heading">Filters</h2>
-
-                <label className="vaults-label" htmlFor="vault-search">
-                  Search
-                </label>
-                <input
-                  id="vault-search"
-                  className="vaults-search-input"
-                  placeholder="Search vault"
-                />
-
-                <ul className="vaults-list">
-                  <li className="vaults-list-item is-active">All vaults</li>
-                  <li className="vaults-list-item">My vault</li>
-                  <li className="vaults-list-item">New organization</li>
-                </ul>
-
-                <ul className="vaults-list">
-                  <li className="vaults-list-item is-active">All items</li>
-                  <li className="vaults-list-item">Favorites</li>
-                  <li className="vaults-list-item">Login</li>
-                  <li className="vaults-list-item">Card</li>
-                  <li className="vaults-list-item">Identity</li>
-                  <li className="vaults-list-item">Note</li>
-                </ul>
-              </div>
-            </>
-          )}
         </section>
       </div>
     </main>
