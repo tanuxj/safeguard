@@ -334,30 +334,46 @@ export default function Dashboard() {
               ) : null}
 
               {selectedSend ? (
-                <div className="send-link-card">
-                  <p className="send-subheading">{selectedSend.name}</p>
-                  {selectedSend.send_type === "file" ? (
-                    <>
-                      <p className="send-help-text">File: {selectedSend.file_name}</p>
-                      <p className="send-help-text">
-                        Size: {selectedSend.file_size ? `${Math.round(selectedSend.file_size / 1024)} KB` : "Unknown"}
-                      </p>
-                      <a
-                        className="btn btn-primary"
-                        target="_blank"
-                        rel="noreferrer"
-                        href={`${import.meta.env.VITE_API_BASE_URL}/send/public-file/${mySends.find((item) => item.id === selectedSend.id)?.share_token ?? ""}`}
+                <div className="new-send-modal" onClick={() => setSelectedSend(null)}>
+                  <div
+                    className="send-link-card send-preview-modal"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <p className="send-subheading">{selectedSend.name}</p>
+                    {selectedSend.send_type === "file" ? (
+                      <>
+                        <p className="send-help-text">File: {selectedSend.file_name}</p>
+                        <p className="send-help-text">
+                          Size:{" "}
+                          {selectedSend.file_size
+                            ? `${Math.round(selectedSend.file_size / 1024)} KB`
+                            : "Unknown"}
+                        </p>
+                        <a
+                          className="btn btn-primary"
+                          target="_blank"
+                          rel="noreferrer"
+                          href={`${import.meta.env.VITE_API_BASE_URL}/send/public-file/${mySends.find((item) => item.id === selectedSend.id)?.share_token ?? ""}`}
+                        >
+                          Download file
+                        </a>
+                      </>
+                    ) : (
+                      <p className="public-send-text">{selectedSend.text_to_share}</p>
+                    )}
+                    <p className="send-help-text">
+                      Deletion date: {new Date(selectedSend.deletion_date).toLocaleString()}
+                    </p>
+                    <p className="send-help-text">Who can view: {selectedSend.who_can_view}</p>
+                    <div className="hero-actions">
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => setSelectedSend(null)}
                       >
-                        Download file
-                      </a>
-                    </>
-                  ) : (
-                    <p className="public-send-text">{selectedSend.text_to_share}</p>
-                  )}
-                  <p className="send-help-text">
-                    Deletion date: {new Date(selectedSend.deletion_date).toLocaleString()}
-                  </p>
-                  <p className="send-help-text">Who can view: {selectedSend.who_can_view}</p>
+                        Close
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 

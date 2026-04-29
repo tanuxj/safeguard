@@ -419,6 +419,19 @@ textarea:focus {
   );
 }
 
+.send-preview-modal {
+  margin-top: 0;
+  width: min(700px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border-radius: 16px;
+  background: linear-gradient(
+    170deg,
+    rgba(17, 24, 39, 0.98),
+    rgba(17, 24, 39, 0.9)
+  );
+}
+
 .send-help-text {
   margin: 2px 0 8px;
   color: var(--text-secondary);
