@@ -1,0 +1,43 @@
+:root {
+  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+
+  --bg-base: #0f172a;
+  --bg-surface: #111827;
+  --bg-muted: #1f2937;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-subtle: #273449;
+  --brand: #3ecf8e;
+  --brand-hover: #33ba7f;
+  --brand-glow: rgba(62, 207, 142, 0.18);
+  --danger: #f87171;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(62, 207, 142, 0.1), transparent 35%),
+    radial-gradient(circle at 85% 10%, rgba(30, 64, 175, 0.18), transparent 35%),
+    var(--bg-base);
+  color: var(--text-primary);
+}
+
+a {
+  color: inherit;
+}

@@ -1,0 +1,118 @@
+[project]
+name = "p1-backend"
+version = "0.1.0"
+description = "p1 system backend"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.112.0,<0.113.0",
+    "fastapi-users>=15.0.0,<16.0.0",
+    "uvicorn[standard]>=0.30.0",
+    "tortoise-orm>=0.21.0",
+    "aerich>=0.8.1",
+    "asyncpg>=0.29.0"
+]
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
+python_functions = "test_*"
+asyncio_mode = "auto"
+pythonpath = ["."]
+addopts = [
+    "-v",
+    "-s",
+    "--tb=long",
+    "--no-header",
+    "--disable-warnings",
+    "--continue-on-collection-errors",
+    "--color=yes",
+    "--import-mode=importlib",
+]
+filterwarnings = [
+    "ignore",
+    "ignore::DeprecationWarning",
+    "ignore::RuntimeWarning",
+    "ignore::UserWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore::FutureWarning",
+    "ignore::pytest.PytestCollectionWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+    "ignore::pytest.PytestUnknownMarkWarning",
+]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/conftest.py",
+    "*/__init__.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError"
+]
+
+# formatting and linting
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".pyi",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "alembic/versions",
+]
+
+[tool.ruff.lint]
+select = ["I"]
+ignore = [
+    "F841",  # Local variable is assigned to but never used
+    "F842",  # Local variable is assigned to but never used (annotated)
+    "F401",  # Imported but unused
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.aerich]
+tortoise_orm = "app.db.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
+
+[dependency-groups]
+dev = [
+    "inquirer>=3.4.1",
+    "rich>=14.2.0",
+    "pre-commit>=4.0.0",
+]
