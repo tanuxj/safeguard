@@ -5,7 +5,7 @@ from fastapi import File, Form, UploadFile
 from fastapi.responses import FileResponse, RedirectResponse, Response
 
 from app.send.models import Send
-from app.send.schemas import CreateSendRequest
+from app.send.schemas import CreateSendRequest, UpdateSendDeletionDateRequest
 from app.send.services import (
     build_share_link,
     create_text_send,
@@ -146,6 +146,28 @@ async def delete_send(
 
     await send.delete()
     return {"message": "send deleted successfully"}
+
+
+@router.patch("/{send_id}/deletion-date")
+async def update_send_deletion_date(
+    send_id: str,
+    data: UpdateSendDeletionDateRequest,
+    authorization: str | None = Header(default=None),
+):
+    payload = get_access_payload_from_header(authorization)
+    if not payload:
+        return {"message": "unauthorized"}
+
+    if data.deletion_date.tzinfo is None:
+        return {"message": "deletion date must include timezone"}
+
+    send = await Send.filter(id=send_id, user_id=str(payload["sub"])).first()
+    if not send:
+        return {"message": "send not found"}
+
+    send.deletion_date = data.deletion_date
+    await send.save(update_fields=["deletion_date", "updated_at"])
+    return {"message": "send deletion date updated successfully"}
 
 
 @router.get("/public/{share_token}")

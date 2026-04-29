@@ -36,6 +36,12 @@ interface SendContentPreview {
   who_can_view: string;
 }
 
+interface EditDeletionState {
+  sendId: string;
+  sendName: string;
+  deletionDate: string;
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [showNewSendForm, setShowNewSendForm] = useState(false);
@@ -44,6 +50,7 @@ export default function Dashboard() {
   const [mySends, setMySends] = useState<SendListItem[]>([]);
   const [sendSearch, setSendSearch] = useState("");
   const [selectedSend, setSelectedSend] = useState<SendContentPreview | null>(null);
+  const [editDeletionState, setEditDeletionState] = useState<EditDeletionState | null>(null);
   const [newSendForm, setNewSendForm] = useState<NewSendForm>({
     name: "",
     textToShare: "",
@@ -224,6 +231,39 @@ export default function Dashboard() {
     }
   };
 
+  const handleOpenEditDeletionDate = (send: SendListItem) => {
+    const localDateTime = new Date(send.deletion_date).toISOString().slice(0, 16);
+    setEditDeletionState({
+      sendId: send.id,
+      sendName: send.name,
+      deletionDate: localDateTime,
+    });
+  };
+
+  const handleSaveDeletionDate = async () => {
+    if (!editDeletionState?.deletionDate) {
+      toast.error("Deletion date is required");
+      return;
+    }
+
+    try {
+      const response = await API.patch(`/send/${editDeletionState.sendId}/deletion-date`, {
+        deletion_date: new Date(editDeletionState.deletionDate).toISOString(),
+      });
+
+      if (response.data?.message !== "send deletion date updated successfully") {
+        toast.error(response.data?.message ?? "Failed to update deletion date");
+        return;
+      }
+
+      setEditDeletionState(null);
+      await loadMySends();
+      toast.success("Deletion date updated");
+    } catch {
+      toast.error("Failed to update deletion date");
+    }
+  };
+
   const filteredSends = mySends.filter((send) =>
     send.name.toLowerCase().includes(sendSearch.trim().toLowerCase())
   );
@@ -304,6 +344,12 @@ export default function Dashboard() {
                                 onClick={() => void handleCopyLink(send.share_link)}
                               >
                                 Copy link
+                              </button>
+                              <button
+                                className="send-tab"
+                                onClick={() => handleOpenEditDeletionDate(send)}
+                              >
+                                Edit
                               </button>
                             </div>
                           </td>
@@ -521,6 +567,47 @@ export default function Dashboard() {
                       Cancel
                     </button>
                   </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {editDeletionState ? (
+                <div className="new-send-modal" onClick={() => setEditDeletionState(null)}>
+                  <div
+                    className="send-link-card send-preview-modal"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <h2 className="vaults-heading">Edit Send Expiry</h2>
+                    <p className="send-help-text">{editDeletionState.sendName}</p>
+                    <label className="vaults-label" htmlFor="edit-send-deletion-date">
+                      New deletion date
+                    </label>
+                    <input
+                      id="edit-send-deletion-date"
+                      type="datetime-local"
+                      value={editDeletionState.deletionDate}
+                      onChange={(event) =>
+                        setEditDeletionState((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                deletionDate: event.target.value,
+                              }
+                            : prev
+                        )
+                      }
+                    />
+                    <div className="hero-actions">
+                      <button className="btn btn-primary" onClick={() => void handleSaveDeletionDate()}>
+                        Save
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => setEditDeletionState(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : null}

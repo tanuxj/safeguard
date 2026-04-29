@@ -24,3 +24,7 @@ class PublicSendResponse(BaseModel):
     text_to_share: str
     deletion_date: datetime
     who_can_view: str
+
+
+class UpdateSendDeletionDateRequest(BaseModel):
+    deletion_date: datetime
