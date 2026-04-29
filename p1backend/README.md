@@ -248,6 +248,56 @@ POSTGRES_DB=postgres
 
 ---
 
+# File Uploads in Production (Cloudflare R2)
+
+File Sends support S3-compatible storage through Cloudflare R2.
+
+In production, configure R2 so uploaded files are stored in cloud object storage instead of local container disk.
+
+## Required R2 environment variables
+
+```env
+R2_ENDPOINT_URL=https://<account-id>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=<your-access-key-id>
+R2_SECRET_ACCESS_KEY=<your-secret-access-key>
+R2_BUCKET_NAME=<your-bucket-name>
+```
+
+## Optional R2 environment variables
+
+```env
+R2_REGION=auto
+R2_PUBLIC_BASE_URL=https://files.example.com
+```
+
+Notes:
+
+* `R2_REGION` defaults to `auto` (recommended for Cloudflare R2).
+* `R2_PUBLIC_BASE_URL` is optional and not required for current backend download flow.
+* Never commit secrets to Git.
+
+## How upload/download works
+
+* Upload API: `POST /send/file`
+* Files are stored in R2 with user/date-based keys and a unique filename suffix to avoid overwrite collisions.
+* Download API: `GET /send/public-file/{share_token}`
+* Backend fetches bytes from R2 and streams the file to the client.
+
+## Deployment checklist
+
+* Add all R2 env vars to your server/container runtime.
+* Restart backend after env update.
+* Test by uploading a file, then opening the generated share link and downloading it.
+* Verify object appears in your R2 bucket.
+
+## Fallback behavior
+
+If R2 configuration is missing or temporarily unavailable, backend falls back to local storage under `uploads/sends`.
+
+For production, keep R2 env vars configured correctly so uploads do not rely on local container filesystem.
+
+---
+
 # Current Main Tables
 
 * users
